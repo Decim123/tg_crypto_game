@@ -1,0 +1,123 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(23, 33, 43); /* Черный цвет фона */
+}
+
+#game-container {
+    display: none; /* Изначально скрываем канвас */
+}
+
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000000; /* Черный фон для загрузочного экрана */
+    z-index: 1000; /* Убедитесь, что загрузочный экран выше всех элементов */
+}
+
+#loading-screen img {
+    width: 100px; /* Размер изображения */
+    height: 100px;
+    animation: spin 2s linear infinite; /* Анимация вращения */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#game-container canvas {
+    display: block; /* Remove unwanted gaps around the canvas */
+    position: absolute; /* Ensure it takes full container space */
+    top: 0;
+    left: 0;
+    width: 100%; /* Stretch canvas width */
+    height: 100%; /* Stretch canvas height */
+}
+
+/* Стили для текста JUMP */
+.jump-text {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 8rem; /* Увеличенный размер шрифта */
+    font-weight: bold;
+    color: rgb(176, 255, 222);
+    transition: transform 0.1s ease, color 0.05s ease;
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    user-select: none; /* Отключаем выделение текста */
+    -webkit-user-select: none; /* Отключаем выделение текста для Safari */
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-touch-callout: none; /* Отключаем меню вызова (copy/paste) на iOS */
+    -webkit-tap-highlight-color: transparent; /* Отключаем эффект выделения на мобильных устройствах */
+}
+/* Анимация нажатия */
+.jump-text:active {
+    user-select: none;
+    transform: translateY(10px); /* Более заметное вдавливание */
+    color: rgba(176, 255, 222, 0.555); /* Темно-оранжевый цвет при нажатии */
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Стили для кнопок */
+button {
+    background-color: rgb(30, 29, 36);
+    color: rgb(176, 255, 222);
+    border: 1px solid rgb(84, 83, 90);
+    font-size: 100%;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.3s ease, color 0.3s ease;
+    outline: none;
+    position: fixed;
+    bottom: 40% !important;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px #ffffff; /* Цвет томата для тени */
+    background-color: #ffffff; /* Цвет томата для фона при наведении */
+    color: #000000; /* Белый цвет текста при наведении */
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 8px #000000; /* Цвет томата для тени */
+}
+
+/* Фон и стили для текста Final Score */
+.final-score {
+    padding: 20px;
+    text-align: center;
+    color: rgb(176, 255, 222);
+    font-size: 200%; /* Уменьшенный размер текста */
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.final-score span {
+    color: #FF4500; /* Темно-оранжевый для выделения */
+}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='leaderboard.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #FFFFFF;
+            background-image: url('{{ url_for('static', filename='images/background.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-arrow" onclick="window.location.href='/'"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/></svg></div>
+        <h1 class="leaderboard-title">Leaderboard</h1>
+        <div class="top-three">
+            {% for user in leaderboard[:3] %}
+            <div class="top-three-item">
+                <div class="top-three-icon">
+                    <img src="{{ url_for('static', filename='game_assets/icons/' + user.skin|string + '.png') }}" alt="User Icon">
+                    <div class="top-three-rank-{{ loop.index }}">{{ loop.index }}</div>
+                </div>
+                <div class="top-three-username">{{ user.username }}</div>
+                <div class="top-three-coins">{{ user.coins }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="leaderboard-list">
+            {% for user in leaderboard[3:] %}
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">{{ loop.index + 3 }}</div>
+                <img src="{{ url_for('static', filename='game_assets/icons/' + user.skin|string + '.png') }}" alt="User Icon">
+                <span class="leaderboard-username">{{ user.username }}</span>
+                <span class="leaderboard-coins">{{ user.coins }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="weekly-button" onclick="window.location.href='/weakly_leaderboard?tg_id={{ tg_id }}'">
+        Weakly
+    </div>
+    
+    <!-- Блок текущего пользователя -->
+    <div class="user-info-container">
+        <span class="user-info-rank">#{{ user_position }}</span>
+        <img src="{{ url_for('static', filename='game_assets/icons/' + skin|string + '.png') }}" alt="User Icon">
+        <div class="user-info-details">
+            <span class="user-info-username">{{ username }}</span>
+            <span class="user-info-coins">{{ coins }} SKAT</span>
+        </div>
+    </div>
+</body>
+</html>

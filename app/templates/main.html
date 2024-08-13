@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-image: url('{{ url_for('static', filename='images/background.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden; /* Запрет прокрутки */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile">
+            <div class="profile-icon" onclick="toggleSlider()">
+                <img id="profile-img" src="{{ url_for('static', filename='game_assets/icons/' + skin|string + '.png') }}" alt="Profile Icon">
+            </div>
+            <div class="profile-name" id="username">{{ tg_id }}</div>
+            <div class="profile-score">
+                <div class="coins">
+                    {{ coins }}<br>
+                </div>
+                <div class="coins_week">
+                    {{ coins_week }}
+                </div>
+            </div>
+        </div>
+
+        <div class="game-card" onclick="startGame()">
+            <img src="{{ url_for('static', filename='images/game_image.jpeg') }}" alt="Drop game">
+            <div class="game-overlay">
+                <span class="game-title" onclick="startGame()">Drop game</span>
+                <button class="game-button" onclick="startGame()">Go</button>
+            </div>
+        </div>
+
+        <div class="leaderboard" onclick="window.location.href='/leaderboard'">
+            <span>Leaderboard</span>
+        </div>        
+    </div>
+
+    <!-- Полупрозрачный overlay и слайдер -->
+    <div id="overlay" class="overlay" onclick="closeSlider()">
+        <div id="slider" class="slider" onclick="event.stopPropagation()">
+            <div class="arrow left-arrow" onclick="prevIcon()">&#9664;</div> <!-- Левая стрелка -->
+            <div id="icon-container" class="icon-container">
+                <img id="current-icon" class="icon" src="" alt="Current Icon"> <!-- Текущая иконка -->
+            </div>
+            <div class="arrow right-arrow" onclick="nextIcon()">&#9654;</div> <!-- Правая стрелка -->
+        </div>
+        <!-- Новый блок для описания иконки -->
+        <div id="icon-description" class="icon-description"></div>
+        <button id="pick-button" class="pick-button" onclick="pickIcon()">Pick</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Расширяем приложение на весь экран
+
+        const username = tg.initDataUnsafe.user.username || 'Unknown User';
+        const tg_id = tg.initDataUnsafe.user.id;
+        let selectedSkin = {{ skin }}; // Текущая выбранная иконка
+        let currentIndex = selectedSkin - 1; // Начинаем с текущего скина
+
+        document.getElementById('username').textContent = username;
+
+        const flask_tg_id = "{{ tg_id }}";
+        if (flask_tg_id === 'None' || flask_tg_id === 'Неизвестный пользователь') {
+            window.location.href = `/?tg_id=${tg_id}&username=${username}`;
+        }
+
+        // Добавляем передачу tg_id в URL для перехода на страницу лидерборда
+        document.querySelector('.leaderboard').addEventListener('click', function() {
+            window.location.href = `/leaderboard?tg_id=${tg_id}`;
+        });
+
+        // Инициализируем отображение текущей иконки
+        document.getElementById('profile-img').src = `{{ url_for('static', filename='game_assets/icons/') }}${selectedSkin}.png`;
+
+        const descriptions = [
+            "Ms. Block",
+            "Mr. Block",
+            "Farmer",
+            "Manager",
+            "Student",
+            "Footballer",
+            "Hippie",
+            "Hipster",
+            "Biker",
+            "Gamer",
+        ];
+
+        function startGame() {
+            window.location.href = `{{ url_for("game", tg_id=tg_id) }}`;
+        }
+
+        function toggleSlider() {
+            const slider = document.getElementById('slider');
+            const overlay = document.getElementById('overlay');
+            if (slider.style.display === 'none' || !slider.style.display) {
+                loadIcon(currentIndex);
+                slider.style.display = 'flex';
+                overlay.style.display = 'block';
+            } else {
+                slider.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+        }
+
+        function closeSlider() {
+            document.getElementById('slider').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function loadIcon(index) {
+            const icon = document.getElementById('current-icon');
+            const description = document.getElementById('icon-description');
+            icon.src = `{{ url_for('static', filename='game_assets/icons/') }}${index + 1}.png`;
+            description.textContent = descriptions[index];
+            document.getElementById('pick-button').style.display = 'block'; // Показать кнопку Pick
+        }
+
+        function prevIcon() {
+            if (currentIndex > 0) {
+                currentIndex -= 1;
+                loadIcon(currentIndex);
+            }
+        }
+
+        function nextIcon() {
+            if (currentIndex < 9) {
+                currentIndex += 1;
+                loadIcon(currentIndex);
+            }
+        }
+
+        function pickIcon() {
+            selectedSkin = currentIndex + 1;
+            fetch('/update_skin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `tg_id=${tg_id}&skin=${selectedSkin}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Skin updated successfully');
+                    closeSlider();
+                    // Обновляем отображаемую иконку профиля
+                    document.getElementById('profile-img').src = `{{ url_for('static', filename='game_assets/icons/') }}${selectedSkin}.png`;
+                } else {
+                    console.error('Failed to update skin');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

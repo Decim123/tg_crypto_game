@@ -1,0 +1,245 @@
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden; /* Полный запрет прокрутки */
+    
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    box-sizing: border-box;
+    display: table-header-group;
+}
+
+.profile {
+    text-align: center;
+}
+
+.profile-icon {
+    cursor: pointer;
+    position: relative; /* Для позиционирования слайдера внутри */
+}
+
+.profile-icon img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%; /* Скругление для иконки профиля */
+    background-color: #4f4f4f00;
+    margin-bottom: 0;
+    z-index: 10;
+}
+
+.profile-name {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.profile-score {
+    font-size: 1.2rem;
+}
+
+.game-card {
+    position: relative;
+    width: 100%;
+    height: 30%; /* Устанавливаем высоту в 30% от родителя */
+    max-width: 400px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Скрываем выходящие за пределы части */
+    flex-grow: 1; /* Позволяем растягиваться по высоте */
+    border-radius: 20px; /* Более сильное скругление углов */
+    border: 3px solid #ffffff00; /* Обводка белого цвета */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.397); /* Легкая тень для объема */
+}
+
+.game-card img {
+    width: 100%;
+    height: 100%; /* Заполняем высоту контейнера */
+    object-fit: cover; /* Сохраняем пропорции изображения */
+    border-radius: 20px; /* Соответствующее скругление для изображения */
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px; /* Соответствующее скругление для оверлея */
+    pointer-events: none;
+}
+
+.game-title {
+    font-size: 150%;
+    color: #FFFFFF;
+    pointer-events: auto;
+    font-weight: bold;
+    margin-top: 35%;
+}
+
+.game-button {
+    position:relative;
+    right: 0%;
+    bottom: 35%;
+    background-color: rgb(30, 29, 36);
+    color: rgb(176, 255, 222);
+    font-weight: bold;
+    padding: 2% 4%;
+    border-radius: 20px;
+    border: 1px solid rgb(84, 83, 90);
+    cursor: pointer;
+    font-size: 100%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transform: rotate(-16deg);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.leaderboard {
+    background-color: #D3B2FF;
+    color: #2C2C2C;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 100%;
+    text-align: center;
+    width: 130vw; /* Шире экрана */
+    transform: rotate(-10deg); /* Наклон влево */
+    position: fixed; /* Фиксированное позиционирование */
+    top: 80%; /* Смещение вверх */
+    left: 50%;
+    transform: translateX(-50%) rotate(-10deg); /* Центрирование и наклон */
+    box-sizing: border-box;
+    z-index: 1; /* Устанавливаем z-index для отображения поверх других элементов */
+}
+
+.coins {
+    font-size: 150%;
+}
+
+.coins_week {
+    color: #ffffff96;
+}
+
+/* Полупрозрачный черный overlay */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.897);
+    z-index: 10;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Располагаем элементы вертикально */
+}
+
+/* Слайдер и иконки */
+.slider {
+    margin-top: 5%;
+    display: none;
+    background-color: transparent; /* Фон слайдера прозрачный */
+    z-index: 20;
+    text-align: center;
+    width: 50%; /* Занимает всю ширину экрана */
+    position: relative;
+    margin-left: 25%;
+}
+
+.icon-container {
+    margin-top: 100%; /* Отступ сверху для позиционирования по вертикали */
+    display: flex;
+    justify-content: center; /* Центрирование по горизонтали */
+    align-items: center; /* Центрирование по вертикали */
+    height: 80px; /* Высота иконки */
+    width: 80px; /* Ширина иконки */
+    margin: 0 auto; /* Центрирование по горизонтали */
+}
+
+.icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #4f4f4f00;
+    margin: 0 10px;
+}
+
+/* Стрелки */
+.arrow {
+    cursor: pointer;
+    font-size: 200%;
+    color: #FFFFFF;
+    position: absolute;
+    top: 10%;
+    z-index: 25;
+    padding: 10px;
+}
+
+.left-arrow {
+    left: -5%;
+}
+
+.right-arrow {
+    right: -5%;
+}
+
+/* Кнопка Pick */
+.pick-button {
+    font-weight: bold;
+    display: none;
+    background-color: rgb(30, 29, 36);
+    color: rgb(176, 255, 222);
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 0%;
+    z-index: 20;
+    position: absolute;
+    bottom: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid rgb(84, 83, 90);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Блок для текста под слайдером */
+.icon-description {
+    color: rgb(176, 255, 222); /* Цвет текста - черный для лучшего контраста */
+    font-size: 150%;
+    margin-top: 5%;
+    margin-left: 28%; /* Отступы сверху и снизу */
+    text-align: center;
+    max-width: 40%; /* Ограничение ширины для лучшей читаемости на узких экранах */
+    background-color: rgb(30, 29, 36); /* Фон белый */
+    border-radius: 10px; /* Скругленные углы */
+    padding: 2%; /* Внутренний отступ */
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.267); /* Тень для объема */
+    display: flex; /* Flexbox для центрирования */
+    justify-content: center; /* Горизонтальное центрирование */
+    align-items: center; /* Вертикальное центрирование */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+}
