@@ -1,8 +1,10 @@
 from flask import Flask, request, render_template, url_for, redirect, jsonify
+from flask_cors import CORS
 import os
 import sqlite3
 
 app = Flask(__name__)
+CORS(app)  # Разрешаем CORS для всех доменов
 
 def get_db_connection():
     conn = sqlite3.connect('/var/www/tg_crypto_game/database.db')
