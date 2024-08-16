@@ -6,7 +6,7 @@ from lexicon.lexicon_en import LEXICON_EN
 router = Router()
 user_states = {}
 
-url = 'https://096a-176-213-104-154.ngrok-free.app'
+url = 'https://groovyskater.xyz/'
 
 @router.message(CommandStart())
 async def process_start_command(message: Message):
