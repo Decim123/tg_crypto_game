@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, request, render_template, url_for, redirect, jsonify
 import os
 import sqlite3
 
@@ -23,6 +23,18 @@ def create_users_table():
             skin INTEGER DEFAULT 1,
             available_skins TEXT DEFAULT '1',
             locked_skins TEXT DEFAULT '2,3,4,5,6,7,8,9,10'
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+def create_wallets_table():
+    conn = sqlite3.connect('/var/www/tg_crypto_game/wallets.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS wallets (
+            tg_id INTEGER PRIMARY KEY,
+            wallet_address TEXT
         )
     ''')
     conn.commit()
@@ -55,7 +67,6 @@ def update_user_position(tg_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Обновляем позиции всех пользователей
     cursor.execute('''
         UPDATE users
         SET place = (
@@ -66,7 +77,6 @@ def update_user_position(tg_id):
     ''')
     conn.commit()
     conn.close()
-
 
 @app.route('/')
 def index():
@@ -86,7 +96,7 @@ def index():
             if user_data:
                 coins = user_data['coins']
                 coins_week = user_data['coins_week']
-                skin = user_data['skin'] if 'skin' in user_data.keys() else 1  # Получаем значение skin
+                skin = user_data['skin'] if 'skin' in user_data.keys() else 1
 
         except ValueError:
             print("Invalid tg_id: must be an integer")
@@ -99,7 +109,6 @@ def game():
     user_data = get_user_data(tg_id)
     skin = user_data['skin'] if user_data else 1
     return render_template('game/index.html', tg_id=tg_id, skin=skin)
-
 
 @app.route('/update_skin', methods=['POST'])
 def update_skin():
@@ -126,7 +135,6 @@ def update_skin():
             return 'Invalid tg_id or skin', 400
 
     return 'Invalid request', 400
-
 
 @app.route('/update_score', methods=['POST'])
 def update_score():
@@ -162,12 +170,11 @@ def leaderboard():
     if not tg_id:
         return "tg_id not provided", 400
 
-    print(f"Received tg_id: {tg_id}")  # Отладочный вывод
+    print(f"Received tg_id: {tg_id}")
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Сортируем пользователей по количеству монет
     cursor.execute('''
         SELECT tg_id, username, coins, skin 
         FROM users 
@@ -175,9 +182,8 @@ def leaderboard():
     ''')
     leaderboard = cursor.fetchall()
 
-    print(f"Leaderboard data: {leaderboard}")  # Отладочный вывод
+    print(f"Leaderboard data: {leaderboard}")
 
-    # Определяем позицию текущего пользователя и данные о нем
     user_position = None
     user_data = None
     for index, user in enumerate(leaderboard):
@@ -186,7 +192,7 @@ def leaderboard():
             user_data = user
             break
 
-    print(f"User data: {user_data}, User position: {user_position}")  # Отладочный вывод
+    print(f"User data: {user_data}, User position: {user_position}")
 
     conn.close()
 
@@ -201,8 +207,6 @@ def leaderboard():
                            user_position=user_position,
                            tg_id=tg_id)
 
-
-
 @app.route('/weakly_leaderboard')
 def weakly_leaderboard():
     tg_id = request.args.get('tg_id')
@@ -213,7 +217,6 @@ def weakly_leaderboard():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Сортируем пользователей по количеству монет за неделю
     cursor.execute('''
         SELECT tg_id, username, coins_week as coins, skin 
         FROM users 
@@ -221,7 +224,6 @@ def weakly_leaderboard():
     ''')
     leaderboard = cursor.fetchall()
 
-    # Определяем позицию текущего пользователя
     user_position = None
     for index, user in enumerate(leaderboard):
         if user['tg_id'] == int(tg_id):
@@ -231,7 +233,6 @@ def weakly_leaderboard():
     if user_position is None:
         return "User not found in leaderboard", 404
 
-    # Получаем данные текущего пользователя
     user_data = get_user_data(tg_id)
 
     if not user_data:
@@ -247,8 +248,30 @@ def weakly_leaderboard():
                            user_position=user_position,
                            tg_id=tg_id)
 
+@app.route('/wallet', methods=['POST'])
+def wallet():
+    data = request.json
+    tg_id = data['tg_id']
+    wallet_address = data['account']['address']
+    
+    conn = sqlite3.connect('/var/www/tg_crypto_game/wallets.db')
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM wallets WHERE tg_id = ?', (tg_id,))
+    existing_user = cursor.fetchone()
+
+    if existing_user:
+        cursor.execute('UPDATE wallets SET wallet_address = ? WHERE tg_id = ?', (wallet_address, tg_id))
+    else:
+        cursor.execute('INSERT INTO wallets (tg_id, wallet_address) VALUES (?, ?)', (tg_id, wallet_address))
+    
+    conn.commit()
+    conn.close()
+
+    return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
-    create_users_table()  # Создаем таблицу users, если её еще нет
+    create_users_table()
+    create_wallets_table()
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
