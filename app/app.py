@@ -162,6 +162,8 @@ def leaderboard():
     if not tg_id:
         return "tg_id not provided", 400
 
+    print(f"Received tg_id: {tg_id}")  # Отладочный вывод
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -173,23 +175,23 @@ def leaderboard():
     ''')
     leaderboard = cursor.fetchall()
 
-    # Определяем позицию текущего пользователя
+    print(f"Leaderboard data: {leaderboard}")  # Отладочный вывод
+
+    # Определяем позицию текущего пользователя и данные о нем
     user_position = None
+    user_data = None
     for index, user in enumerate(leaderboard):
         if user['tg_id'] == int(tg_id):
             user_position = index + 1
+            user_data = user
             break
 
-    if user_position is None:
-        return "User not found in leaderboard", 404
-
-    # Получаем данные текущего пользователя
-    user_data = get_user_data(tg_id)
-
-    if not user_data:
-        return "User data not found", 404
+    print(f"User data: {user_data}, User position: {user_position}")  # Отладочный вывод
 
     conn.close()
+
+    if user_position is None or user_data is None:
+        return "User not found in leaderboard", 404
 
     return render_template('leaderboard.html', 
                            leaderboard=leaderboard, 
@@ -198,6 +200,7 @@ def leaderboard():
                            skin=user_data['skin'], 
                            user_position=user_position,
                            tg_id=tg_id)
+
 
 
 @app.route('/weakly_leaderboard')
