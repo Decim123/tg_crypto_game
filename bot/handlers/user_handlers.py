@@ -15,7 +15,7 @@ async def process_start_command(message: Message):
         args = message.text.split()[1]
     except:
         args = None
-    path_to_photo = "bot/img/start_img.png"
+    path_to_photo = "/var/www/tg_crypto_game/bot/img/start_img.png"
 
     if args:
         inline_kb = InlineKeyboardMarkup(inline_keyboard=[
