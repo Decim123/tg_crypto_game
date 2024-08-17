@@ -21,7 +21,7 @@ async def process_start_command(message: Message):
         inline_kb = InlineKeyboardMarkup(inline_keyboard=[
             [
                 InlineKeyboardButton(text="Let's go", web_app=types.WebAppInfo(url=f"{url}?ref={args}")),
-                InlineKeyboardButton(text="Join community", url="https://t.me/TGRExchange")
+                InlineKeyboardButton(text="Join community", url="https://t.me/Groovyskater")
             ]
         ])  
         caption = LEXICON_EN['/start'] + str(args)
@@ -29,7 +29,7 @@ async def process_start_command(message: Message):
         inline_kb = InlineKeyboardMarkup(inline_keyboard=[
             [
                 InlineKeyboardButton(text="Let's go", web_app=types.WebAppInfo(url=url)),
-                InlineKeyboardButton(text="Join community", url="https://t.me/TGRExchange")
+                InlineKeyboardButton(text="Join community", url="https://t.me/Groovyskater")
             ]
         ])  
         caption = LEXICON_EN['/start']
