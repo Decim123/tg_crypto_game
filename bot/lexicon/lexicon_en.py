@@ -1,3 +1,3 @@
 LEXICON_EN: dict[str, str] = {
-    '/start': 'Start message',
+    '/start': 'How cool is your?\nCheck your rating and receive rewards',
 }
