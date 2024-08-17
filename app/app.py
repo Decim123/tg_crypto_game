@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, url_for, redirect, jsonify
 from flask_cors import CORS
 import os
 import sqlite3
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 CORS(app)  # Разрешаем CORS для всех доменов
@@ -79,6 +80,41 @@ def update_user_position(tg_id):
     ''')
     conn.commit()
     conn.close()
+
+def weekly_rewards():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Получаем всех пользователей и сортируем по coins_week
+    cursor.execute('''
+        SELECT tg_id, coins_week 
+        FROM users 
+        ORDER BY coins_week DESC
+    ''')
+    users = cursor.fetchall()
+
+    # Награды за позиции
+    rewards = [1000, 900, 800, 700, 600, 550, 500, 450, 400, 350, 300, 250, 200, 175, 150, 100]
+
+    for i, user in enumerate(users):
+        if i < len(rewards):
+            reward = rewards[i]
+        else:
+            reward = 0  # Остальные не получают наград
+
+        cursor.execute('''
+            UPDATE users
+            SET coins = coins + ?, coins_week = 0
+            WHERE tg_id = ?
+        ''', (reward, user['tg_id']))
+
+    conn.commit()
+    conn.close()
+
+# Создаем планировщик для выполнения еженедельного задания
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=weekly_rewards, trigger="interval", weeks=1)
+scheduler.start()
 
 @app.route('/')
 def index():
@@ -275,5 +311,10 @@ def wallet():
 if __name__ == '__main__':
     create_users_table()
     create_wallets_table()
+
+    # Запуск планировщика
+    scheduler.start()
+
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
